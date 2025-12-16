@@ -1,53 +1,22 @@
-// Инициализация Telegram Web App
+// Telegram Web App
 let tg = window.Telegram.WebApp;
-
-// Раскрываем на весь экран
 tg.expand();
 
-// База данных автомобилей (ключи ДОЛЖНЫ совпадать с ботом)
-let cars = [
-    { key: 'toyota', name: 'Toyota', emoji: '🚗' },
-    { key: 'bmw', name: 'BMW', emoji: '🏎' },
-    { key: 'mercedes', name: 'Mercedes', emoji: '⭐' },
-    { key: 'audi', name: 'Audi', emoji: '🔧' },
-    { key: 'honda', name: 'Honda', emoji: '🚙' },
-    { key: 'ford', name: 'Ford', emoji: '🚘' },
-    { key: 'volkswagen', name: 'Volkswagen', emoji: '🚐' },
-    { key: 'nissan', name: 'Nissan', emoji: '⚡' },
-    { key: 'hyundai', name: 'Hyundai', emoji: '🚙' },
-    { key: 'kia', name: 'Kia', emoji: '🌀' }
-];
+// Простой список кнопок
+let brands = ['toyota', 'bmw', 'mercedes', 'audi', 'honda', 'ford', 'volkswagen', 'nissan', 'hyundai', 'kia'];
 
-// Получаем контейнер для кнопок
 let container = document.getElementById('cars-container');
 
-// Создаем кнопки для каждого автомобиля
-for (let i = 0; i < cars.length; i++) {
-    let car = cars[i];
+brands.forEach(brand => {
+    let btn = document.createElement('button');
+    btn.textContent = brand.toUpperCase();
+    btn.style.cssText = 'padding:15px; margin:5px; background:#2cab37; color:white; border:none; border-radius:8px;';
     
-    // Создаем кнопку
-    let button = document.createElement('button');
-    button.className = 'car-btn';
-    
-    // Содержимое кнопки
-    button.innerHTML = `
-        <div class="emoji">${car.emoji}</div>
-        <div class="name">${car.name}</div>
-    `;
-    
-    // ⭐⭐ ВАЖНО: Обработчик клика ⭐⭐
-    button.onclick = function() {
-        console.log('Нажата кнопка:', car.key);
-        
-        // ⭐⭐ ОТПРАВЛЯЕМ ДАННЫЕ В БОТ ⭐⭐
-        tg.sendData(car.key);
-        
-        // Закрываем Web App
+    btn.onclick = function() {
+        console.log('Отправляю:', brand);
+        tg.sendData(brand);
         tg.close();
     };
     
-    // Добавляем кнопку в контейнер
-    container.appendChild(button);
-}
-
-console.log('Web App загружен! Доступные марки:', cars.map(c => c.key));
+    container.appendChild(btn);
+});
