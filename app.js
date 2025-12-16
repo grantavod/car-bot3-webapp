@@ -1,40 +1,66 @@
-// Telegram Web App
+// Telegram Web App - УПРОЩЕННАЯ ВЕРСИЯ
 let tg = window.Telegram.WebApp;
+
+// Раскрываем на весь экран
 tg.expand();
 
-// База данных автомобилей
-let cars = [
-    { key: 'toyota', name: 'Toyota', emoji: '🚗' },
-    { key: 'bmw', name: 'BMW', emoji: '🏎' },
-    { key: 'mercedes', name: 'Mercedes', emoji: '⭐' },
-    { key: 'audi', name: 'Audi', emoji: '🔧' },
-    { key: 'honda', name: 'Honda', emoji: '🚙' },
-    { key: 'ford', name: 'Ford', emoji: '🚘' },
-    { key: 'volkswagen', name: 'Volkswagen', emoji: '🚐' },
-    { key: 'nissan', name: 'Nissan', emoji: '⚡' },
-    { key: 'hyundai', name: 'Hyundai', emoji: '🚙' },
-    { key: 'kia', name: 'Kia', emoji: '🌀' }
-];
+console.log('✅ Web App загружен');
 
-// Получаем контейнер для кнопок
+// Создаем простые кнопки
+let cars = ['toyota', 'bmw', 'mercedes', 'audi', 'honda', 
+            'ford', 'volkswagen', 'nissan', 'hyundai', 'kia'];
+
 let container = document.getElementById('cars-container');
 
+// Простые названия для кнопок
+let carNames = {
+    'toyota': '🚗 Toyota',
+    'bmw': '🏎 BMW', 
+    'mercedes': '⭐ Mercedes',
+    'audi': '🔧 Audi',
+    'honda': '🇯🇵 Honda',
+    'ford': '🇺🇸 Ford',
+    'volkswagen': '🇩🇪 Volkswagen',
+    'nissan': '⚡ Nissan',
+    'hyundai': '🇰🇷 Hyundai',
+    'kia': '🌀 Kia'
+};
+
 // Создаем кнопки
-cars.forEach(car => {
-    let button = document.createElement('button');
-    button.className = 'car-btn';
-    button.innerHTML = `
-        <div class="emoji">${car.emoji}</div>
-        <div class="name">${car.name}</div>
+cars.forEach(key => {
+    let btn = document.createElement('button');
+    btn.textContent = carNames[key];
+    btn.style.cssText = `
+        padding: 15px;
+        margin: 8px;
+        background: #2cab37;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 160px;
+        height: 70px;
     `;
     
-    // Обработчик клика
-    button.addEventListener('click', function() {
-        // Отправляем ключ в бот
-        tg.sendData(car.key);
+    btn.onclick = function() {
+        console.log('🔘 Нажата кнопка:', key);
+        console.log('📤 Отправляю данные:', key);
+        
+        // Отправляем данные
+        tg.sendData(key);
+        
+        console.log('✅ Данные отправлены');
+        
         // Закрываем Web App
-        tg.close();
-    });
+        setTimeout(() => {
+            tg.close();
+            console.log('📱 Web App закрыт');
+        }, 500);
+    };
     
-    container.appendChild(button);
+    container.appendChild(btn);
 });
+
+console.log(`✅ Создано ${cars.length} кнопок`);
