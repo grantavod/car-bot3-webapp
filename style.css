@@ -23,7 +23,6 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    margin-bottom: 30px;
 }
 
 .car-btn {
@@ -39,13 +38,7 @@ h1 {
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.2s ease;
     min-height: 90px;
-}
-
-.car-btn:hover {
-    background: var(--tg-theme-secondary-bg-color, #248232);
-    transform: scale(1.03);
 }
 
 .car-btn .emoji {
@@ -55,10 +48,4 @@ h1 {
 
 .car-btn .name {
     font-size: 14px;
-}
-
-.footer {
-    margin-top: 20px;
-    font-size: 14px;
-    color: var(--tg-theme-hint-color, #888);
 }
