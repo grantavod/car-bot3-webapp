@@ -180,6 +180,8 @@
             border-radius: 10px;
             text-align: center;
             display: none;
+            font-size: 16px;
+            line-height: 1.4;
         }
         
         .status.success {
@@ -311,7 +313,7 @@
             telegramWebApp.expand();
             telegramWebApp.MainButton.text = "Готово";
             telegramWebApp.MainButton.color = "#667eea";
-            showStatus("✅ Режим Telegram Web App", "success");
+            showStatus("✅ Режим Telegram Web App активирован", "success");
         } else {
             showStatus("🌐 Сайт открыт в браузере", "info");
         }
@@ -393,13 +395,13 @@
                 btn.disabled = false;
                 btnText.textContent = `Отправить ${car.name}`;
                 
-                showStatus(`✅ Выбрано: ${car.name}`, "success");
+                showStatus(`✅ Выбрана марка: ${car.name}`, "success");
             });
             
             return carCard;
         }
         
-        // Отправка выбора
+        // Отправка выбора - ГЛАВНОЕ ИСПРАВЛЕНИЕ!
         function sendCarSelection() {
             if (!selectedBrand) {
                 showStatus("❌ Сначала выберите марку", "error");
@@ -407,9 +409,9 @@
             }
             
             if (telegramWebApp) {
-                // Отправляем в Telegram Web App
+                // ВАЖНО: Отправляем ПРОСТОЙ ТЕКСТ, а не объект
                 telegramWebApp.sendData(selectedBrand);
-                showStatus("✅ Отправлено! Закройте окно", "success");
+                showStatus("✅ Данные отправлены! Закройте это окно.", "success");
                 
                 setTimeout(() => {
                     telegramWebApp.close();
@@ -418,13 +420,26 @@
                 // Показываем инструкцию для браузера
                 const carName = carDatabase[selectedBrand].name;
                 showStatus(
-                    `📋 Для получения информации:\n` +
+                    `📋 Для получения информации:\n\n` +
                     `1. Откройте @Brands_Auto_bot в Telegram\n` +
                     `2. Отправьте ключ: ${selectedBrand}\n` +
-                    `3. Или нажмите ссылку выше`,
+                    `3. Или нажмите ссылку выше\n\n` +
+                    `Ключ "${selectedBrand}" скопирован в буфер обмена`,
                     "info"
                 );
+                
+                // Копируем в буфер обмена
+                copyToClipboard(selectedBrand);
             }
+        }
+        
+        // Копирование в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('Текст скопирован:', text);
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+            });
         }
         
         // Показать статус
@@ -432,6 +447,13 @@
             const statusEl = document.getElementById('status');
             statusEl.textContent = message;
             statusEl.className = 'status ' + type;
+            
+            // Автоматически скрываем через 5 секунд
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
         }
     </script>
 </body>
