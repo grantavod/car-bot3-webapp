@@ -1,7 +1,5 @@
-// Telegram Web App - УПРОЩЕННАЯ ВЕРСИЯ
+// Telegram Web App
 let tg = window.Telegram.WebApp;
-
-// Раскрываем на весь экран
 tg.expand();
 
 console.log('✅ Web App загружен');
