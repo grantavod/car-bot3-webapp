@@ -8,11 +8,11 @@ let cars = [
     { key: 'bmw', name: 'BMW', emoji: '🏎' },
     { key: 'mercedes', name: 'Mercedes', emoji: '⭐' },
     { key: 'audi', name: 'Audi', emoji: '🔧' },
-    { key: 'honda', name: 'Honda', emoji: '🇯🇵' },
-    { key: 'ford', name: 'Ford', emoji: '🇺🇸' },
-    { key: 'volkswagen', name: 'Volkswagen', emoji: '🇩🇪' },
+    { key: 'honda', name: 'Honda', emoji: '🚙' }, // вместо 🇯🇵
+    { key: 'ford', name: 'Ford', emoji: '🚘' },   // вместо 🇺🇸
+    { key: 'volkswagen', name: 'Volkswagen', emoji: '🚐' }, // вместо 🇩🇪
     { key: 'nissan', name: 'Nissan', emoji: '⚡' },
-    { key: 'hyundai', name: 'Hyundai', emoji: '🇰🇷' },
+    { key: 'hyundai', name: 'Hyundai', emoji: '🚙' }, // вместо 🇰🇷
     { key: 'kia', name: 'Kia', emoji: '🌀' }
 ];
 
