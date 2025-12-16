@@ -37,7 +37,7 @@ for (let i = 0; i < cars.length; i++) {
     
     // ⭐⭐ ВАЖНО: Обработчик клика ⭐⭐
     button.onclick = function() {
-        console.log('Нажата кнопка:', car.key); // Для отладки
+        console.log('Нажата кнопка:', car.key);
         
         // ⭐⭐ ОТПРАВЛЯЕМ ДАННЫЕ В БОТ ⭐⭐
         tg.sendData(car.key);
@@ -50,15 +50,4 @@ for (let i = 0; i < cars.length; i++) {
     container.appendChild(button);
 }
 
-// Обработчик кнопки "Назад" в Telegram
-if (tg.BackButton) {
-    tg.BackButton.onClick(function() {
-        tg.close();
-    });
-}
-
-// Для отладки: выводим в консоль при загрузке
-console.log('Web App загружен! Доступные марки:');
-cars.forEach(car => {
-    console.log(`${car.emoji} ${car.name} -> ${car.key}`);
-});
+console.log('Web App загружен! Доступные марки:', cars.map(c => c.key));
