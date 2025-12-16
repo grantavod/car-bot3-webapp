@@ -242,6 +242,7 @@
             <p>1. Нажмите на марку автомобиля выше</p>
             <p>2. Нажмите кнопку "Отправить боту"</p>
             <p>3. Всё! Бот пришлет информацию в Telegram</p>
+            <p>4. Кнопки в самом боте тоже продолжают работать</p>
         </div>
         
         <div class="footer">
@@ -274,6 +275,11 @@
             telegramWebApp.expand();
             telegramWebApp.MainButton.text = "Готово";
             telegramWebApp.MainButton.color = "#667eea";
+            console.log("✅ Telegram WebApp активирован");
+            showStatus("✅ Режим Telegram Web App. Выберите марку и нажмите 'Отправить боту'", "show");
+        } else {
+            console.log("🌐 Открыто в браузере");
+            showStatus("🌐 Откройте этот сайт через Telegram бота для автоматической отправки", "show");
         }
         
         // Инициализация при загрузке
@@ -345,43 +351,45 @@
                 btn.disabled = false;
                 btnText.textContent = `Отправить ${car.name} боту`;
                 
-                // Показываем статус
-                showStatus(`✅ Выбрана марка: ${car.name}`);
+                showStatus(`✅ Выбрана марка: ${car.name}. Нажмите "Отправить боту"`, "show");
             });
             
             return carCard;
         }
         
-        // Отправка в Telegram
+        // Отправка в Telegram - ВАЖНОЕ ИСПРАВЛЕНИЕ!
         function sendToTelegram() {
             if (!selectedBrand) {
-                showStatus("❌ Сначала выберите марку автомобиля!");
+                showStatus("❌ Сначала выберите марку автомобиля!", "show");
                 return;
             }
             
             if (telegramWebApp) {
-                // Отправляем в Telegram WebApp
-                telegramWebApp.sendData(selectedBrand);
-                showStatus("✅ Отправлено! Бот пришлет информацию.");
-                
-                setTimeout(() => {
-                    telegramWebApp.close();
-                }, 2000);
+                // ВАЖНО: Отправляем ПРОСТОЙ ТЕКСТ (не объект)
+                try {
+                    console.log(`📤 Отправляю в Telegram: ${selectedBrand}`);
+                    telegramWebApp.sendData(selectedBrand);
+                    showStatus("✅ Отправлено! Бот пришлет информацию...", "show");
+                    
+                    // Автоматически закрываем через 2 секунды
+                    setTimeout(() => {
+                        telegramWebApp.close();
+                    }, 2000);
+                } catch (error) {
+                    console.error("❌ Ошибка отправки:", error);
+                    showStatus(`❌ Ошибка отправки: ${error.message}`, "show");
+                }
             } else {
                 // Если открыто в браузере
-                showStatus("🌐 Откройте этот сайт через Telegram бота для автоматической отправки");
+                showStatus("🌐 Откройте этот сайт через Telegram бота для автоматической отправки", "show");
             }
         }
         
         // Показать статус
-        function showStatus(message) {
+        function showStatus(message, className) {
             const statusEl = document.getElementById('status');
             statusEl.textContent = message;
-            statusEl.classList.add('show');
-            
-            setTimeout(() => {
-                statusEl.classList.remove('show');
-            }, 3000);
+            statusEl.className = 'status ' + className;
         }
     </script>
 </body>
