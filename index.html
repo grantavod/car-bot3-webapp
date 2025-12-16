@@ -117,64 +117,28 @@
             margin-top: 5px;
         }
         
-        .selected-info {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            display: none;
-        }
-        
-        .selected-info.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .selected-brand {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-        
-        .selected-key {
-            font-size: 18px;
-            background: rgba(255,255,255,0.1);
-            padding: 10px 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: inline-block;
-        }
-        
-        .action-buttons {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-        
         .send-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 18px 40px;
+            padding: 20px 50px;
             border-radius: 15px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            max-width: 350px;
+            max-width: 400px;
+            margin: 30px auto;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
         }
         
         .send-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
         }
         
         .send-btn:disabled {
@@ -183,21 +147,18 @@
             transform: none;
         }
         
-        .bot-link {
-            display: inline-block;
-            background: linear-gradient(135deg, #0088cc 0%, #0055cc 100%);
-            color: white;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 16px;
+            display: none;
         }
         
-        .bot-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+        .status.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
         }
         
         .instructions {
@@ -207,7 +168,6 @@
             border-radius: 15px;
             font-size: 14px;
             line-height: 1.5;
-            text-align: left;
         }
         
         .footer {
@@ -238,8 +198,8 @@
             }
             
             .send-btn {
-                padding: 15px 30px;
-                font-size: 18px;
+                padding: 18px 30px;
+                font-size: 20px;
             }
         }
     </style>
@@ -247,8 +207,8 @@
 <body>
     <div class="container">
         <h1>🚗 Выберите марку</h1>
-        <p class="subtitle">Нажмите на кнопку автомобиля</p>
-        <p class="subtitle" style="color: #667eea; font-weight: 600;">ℹ️ После выбора бот пришлет информацию</p>
+        <p class="subtitle">Нажмите на марку автомобиля</p>
+        <p class="subtitle" style="color: #667eea; font-weight: 600;">ℹ️ После выбора нажмите "Отправить боту"</p>
         
         <!-- Toyota категория -->
         <div class="categories">
@@ -270,37 +230,23 @@
             </div>
         </div>
         
-        <div class="selected-info" id="selectedInfo">
-            <div class="selected-brand" id="selectedBrandName"></div>
-            <div>Ключ марки:</div>
-            <div class="selected-key" id="selectedBrandKey"></div>
-            <p style="margin-top: 15px; font-size: 16px;">
-                Нажмите кнопку ниже чтобы отправить в Telegram бота
-            </p>
-        </div>
+        <button class="send-btn" id="sendBtn" disabled onclick="sendToTelegram()">
+            <span>🤖</span>
+            <span id="btnText">Выберите марку выше</span>
+        </button>
         
-        <div class="action-buttons">
-            <button class="send-btn" id="sendBtn" disabled onclick="sendToTelegram()">
-                <span>📱</span>
-                <span id="btnText">Выберите марку выше</span>
-            </button>
-            
-            <a href="https://t.me/Brands_Auto_bot" class="bot-link" target="_blank">
-                🤖 Открыть @Brands_Auto_bot в Telegram
-            </a>
-        </div>
+        <div class="status" id="status"></div>
         
         <div class="instructions">
             <p><strong>📱 Как это работает:</strong></p>
             <p>1. Нажмите на марку автомобиля выше</p>
-            <p>2. Нажмите кнопку "Отправить в Telegram"</p>
-            <p>3. Если открыли через Telegram Web App - информация придет автоматически</p>
-            <p>4. Если открыли в браузере - откроется бот @Brands_Auto_bot, отправьте ему ключ марки</p>
+            <p>2. Нажмите кнопку "Отправить боту"</p>
+            <p>3. Всё! Бот пришлет информацию в Telegram</p>
         </div>
         
         <div class="footer">
             <p>Сайт для Telegram бота @Brands_Auto_bot</p>
-            <p>Выберите марку → Нажмите "Отправить" → Получите информацию в Telegram</p>
+            <p>Выберите → Отправьте → Получите информацию</p>
         </div>
     </div>
 
@@ -320,7 +266,6 @@
         };
         
         let selectedBrand = null;
-        let selectedBrandName = null;
         let telegramWebApp = null;
         
         // Проверяем, в Telegram ли мы
@@ -329,9 +274,6 @@
             telegramWebApp.expand();
             telegramWebApp.MainButton.text = "Готово";
             telegramWebApp.MainButton.color = "#667eea";
-            console.log("✅ Telegram WebApp активирован");
-        } else {
-            console.log("🌐 Открыто в браузере");
         }
         
         // Инициализация при загрузке
@@ -396,73 +338,50 @@
                 
                 // Сохраняем выбранную марку
                 selectedBrand = this.dataset.brand;
-                selectedBrandName = this.dataset.name;
-                
-                // Показываем информацию о выбранной марке
-                showSelectedInfo();
                 
                 // Активируем кнопку отправки
                 const btn = document.getElementById('sendBtn');
                 const btnText = document.getElementById('btnText');
                 btn.disabled = false;
-                btnText.textContent = `Отправить ${car.name} в Telegram`;
+                btnText.textContent = `Отправить ${car.name} боту`;
+                
+                // Показываем статус
+                showStatus(`✅ Выбрана марка: ${car.name}`);
             });
             
             return carCard;
         }
         
-        // Показать информацию о выбранной марке
-        function showSelectedInfo() {
-            const infoEl = document.getElementById('selectedInfo');
-            const brandNameEl = document.getElementById('selectedBrandName');
-            const brandKeyEl = document.getElementById('selectedBrandKey');
-            
-            brandNameEl.textContent = selectedBrandName;
-            brandKeyEl.textContent = selectedBrand;
-            infoEl.classList.add('show');
-        }
-        
         // Отправка в Telegram
         function sendToTelegram() {
             if (!selectedBrand) {
-                alert("❌ Сначала выберите марку автомобиля!");
+                showStatus("❌ Сначала выберите марку автомобиля!");
                 return;
             }
             
             if (telegramWebApp) {
                 // Отправляем в Telegram WebApp
-                try {
-                    telegramWebApp.sendData(selectedBrand);
-                    alert(`✅ Марка "${selectedBrandName}" отправлена в Telegram!`);
-                    
-                    setTimeout(() => {
-                        telegramWebApp.close();
-                    }, 2000);
-                } catch (error) {
-                    alert(`❌ Ошибка отправки: ${error.message}\n\nОтправьте ключ вручную: ${selectedBrand}`);
-                }
+                telegramWebApp.sendData(selectedBrand);
+                showStatus("✅ Отправлено! Бот пришлет информацию.");
+                
+                setTimeout(() => {
+                    telegramWebApp.close();
+                }, 2000);
             } else {
-                // Показываем инструкцию для браузера
-                const message = `📋 Инструкция:\n\n` +
-                               `1. Откройте @Brands_Auto_bot в Telegram\n` +
-                               `2. Отправьте ключ марки: ${selectedBrand}\n` +
-                               `3. Получите информацию об автомобиле\n\n` +
-                               `Ключ "${selectedBrand}" скопирован в буфер обмена`;
-                
-                alert(message);
-                
-                // Копируем в буфер обмена
-                copyToClipboard(selectedBrand);
+                // Если открыто в браузере
+                showStatus("🌐 Откройте этот сайт через Telegram бота для автоматической отправки");
             }
         }
         
-        // Копирование в буфер обмена
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                console.log('Ключ скопирован:', text);
-            }).catch(err => {
-                console.error('Ошибка копирования:', err);
-            });
+        // Показать статус
+        function showStatus(message) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.classList.add('show');
+            
+            setTimeout(() => {
+                statusEl.classList.remove('show');
+            }, 3000);
         }
     </script>
 </body>
