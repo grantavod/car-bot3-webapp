@@ -117,19 +117,70 @@
             margin-top: 5px;
         }
         
-        .status {
+        .selected-info {
             margin-top: 30px;
             padding: 20px;
-            border-radius: 15px;
             background: rgba(255, 255, 255, 0.1);
-            font-size: 16px;
-            line-height: 1.5;
+            border-radius: 15px;
             display: none;
         }
         
-        .status.show {
+        .selected-info.show {
             display: block;
             animation: fadeIn 0.3s ease;
+        }
+        
+        .selected-brand {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .selected-key {
+            font-size: 18px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: inline-block;
+        }
+        
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            max-width: 350px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .bot-link {
@@ -142,7 +193,6 @@
             font-size: 18px;
             font-weight: 600;
             transition: all 0.3s ease;
-            margin-top: 20px;
         }
         
         .bot-link:hover {
@@ -186,6 +236,11 @@
             .cars-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
+            
+            .send-btn {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -215,23 +270,37 @@
             </div>
         </div>
         
-        <div class="status" id="status"></div>
+        <div class="selected-info" id="selectedInfo">
+            <div class="selected-brand" id="selectedBrandName"></div>
+            <div>Ключ марки:</div>
+            <div class="selected-key" id="selectedBrandKey"></div>
+            <p style="margin-top: 15px; font-size: 16px;">
+                Нажмите кнопку ниже чтобы отправить в Telegram бота
+            </p>
+        </div>
         
-        <a href="https://t.me/Brands_Auto_bot" class="bot-link" target="_blank">
-            🤖 Открыть @Brands_Auto_bot в Telegram
-        </a>
+        <div class="action-buttons">
+            <button class="send-btn" id="sendBtn" disabled onclick="sendToTelegram()">
+                <span>📱</span>
+                <span id="btnText">Выберите марку выше</span>
+            </button>
+            
+            <a href="https://t.me/Brands_Auto_bot" class="bot-link" target="_blank">
+                🤖 Открыть @Brands_Auto_bot в Telegram
+            </a>
+        </div>
         
         <div class="instructions">
             <p><strong>📱 Как это работает:</strong></p>
             <p>1. Нажмите на марку автомобиля выше</p>
-            <p>2. Если открыли через Telegram Mini App - информация придет автоматически</p>
-            <p>3. Если открыли в браузере - откроется бот @Brands_Auto_bot, отправьте ему ключ марки</p>
-            <p>4. Ключ марки покажется после нажатия на автомобиль</p>
+            <p>2. Нажмите кнопку "Отправить в Telegram"</p>
+            <p>3. Если открыли через Telegram Web App - информация придет автоматически</p>
+            <p>4. Если открыли в браузере - откроется бот @Brands_Auto_bot, отправьте ему ключ марки</p>
         </div>
         
         <div class="footer">
             <p>Сайт для Telegram бота @Brands_Auto_bot</p>
-            <p>Выберите марку → Получите информацию в Telegram</p>
+            <p>Выберите марку → Нажмите "Отправить" → Получите информацию в Telegram</p>
         </div>
     </div>
 
@@ -250,6 +319,8 @@
             'kia': { name: 'Kia', icon: '🌀', category: 'hyundai' }
         };
         
+        let selectedBrand = null;
+        let selectedBrandName = null;
         let telegramWebApp = null;
         
         // Проверяем, в Telegram ли мы
@@ -306,6 +377,7 @@
             const carCard = document.createElement('div');
             carCard.className = 'car-card';
             carCard.dataset.brand = brandKey;
+            carCard.dataset.name = car.name;
             
             carCard.innerHTML = `
                 <div class="car-icon">${car.icon}</div>
@@ -322,57 +394,65 @@
                 // Выделяем текущую
                 this.classList.add('active');
                 
-                // Отправляем или показываем ключ
-                handleBrandSelection(brandKey, car.name);
+                // Сохраняем выбранную марку
+                selectedBrand = this.dataset.brand;
+                selectedBrandName = this.dataset.name;
+                
+                // Показываем информацию о выбранной марке
+                showSelectedInfo();
+                
+                // Активируем кнопку отправки
+                const btn = document.getElementById('sendBtn');
+                const btnText = document.getElementById('btnText');
+                btn.disabled = false;
+                btnText.textContent = `Отправить ${car.name} в Telegram`;
             });
             
             return carCard;
         }
         
-        // Обработка выбора марки
-        function handleBrandSelection(brandKey, carName) {
-            const statusEl = document.getElementById('status');
+        // Показать информацию о выбранной марке
+        function showSelectedInfo() {
+            const infoEl = document.getElementById('selectedInfo');
+            const brandNameEl = document.getElementById('selectedBrandName');
+            const brandKeyEl = document.getElementById('selectedBrandKey');
+            
+            brandNameEl.textContent = selectedBrandName;
+            brandKeyEl.textContent = selectedBrand;
+            infoEl.classList.add('show');
+        }
+        
+        // Отправка в Telegram
+        function sendToTelegram() {
+            if (!selectedBrand) {
+                alert("❌ Сначала выберите марку автомобиля!");
+                return;
+            }
             
             if (telegramWebApp) {
                 // Отправляем в Telegram WebApp
                 try {
-                    telegramWebApp.sendData(brandKey);
-                    statusEl.innerHTML = `
-                        ✅ <strong>${carName} отправлена!</strong><br>
-                        Информация придет в Telegram бота.
-                        <br><br>
-                        <small>Закройте это окно.</small>
-                    `;
-                    statusEl.className = 'status show';
+                    telegramWebApp.sendData(selectedBrand);
+                    alert(`✅ Марка "${selectedBrandName}" отправлена в Telegram!`);
                     
                     setTimeout(() => {
                         telegramWebApp.close();
                     }, 2000);
                 } catch (error) {
-                    statusEl.innerHTML = `
-                        ❌ <strong>Ошибка отправки!</strong><br>
-                        ${error.message}
-                        <br><br>
-                        Отправьте ключ вручную: <strong>${brandKey}</strong>
-                    `;
-                    statusEl.className = 'status show';
+                    alert(`❌ Ошибка отправки: ${error.message}\n\nОтправьте ключ вручную: ${selectedBrand}`);
                 }
             } else {
-                // Показываем ключ для браузера
-                statusEl.innerHTML = `
-                    📋 <strong>Вы выбрали: ${carName}</strong><br>
-                    Ключ марки: <strong>${brandKey}</strong>
-                    <br><br>
-                    1. Откройте @Brands_Auto_bot в Telegram<br>
-                    2. Отправьте ключ: <strong>${brandKey}</strong><br>
-                    3. Получите информацию об автомобиле
-                    <br><br>
-                    <small>Ключ скопирован в буфер обмена</small>
-                `;
-                statusEl.className = 'status show';
+                // Показываем инструкцию для браузера
+                const message = `📋 Инструкция:\n\n` +
+                               `1. Откройте @Brands_Auto_bot в Telegram\n` +
+                               `2. Отправьте ключ марки: ${selectedBrand}\n` +
+                               `3. Получите информацию об автомобиле\n\n` +
+                               `Ключ "${selectedBrand}" скопирован в буфер обмена`;
+                
+                alert(message);
                 
                 // Копируем в буфер обмена
-                copyToClipboard(brandKey);
+                copyToClipboard(selectedBrand);
             }
         }
         
