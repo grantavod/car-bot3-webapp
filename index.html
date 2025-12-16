@@ -3,23 +3,500 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Выбор автомобиля</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="app.js" defer></script>
+    <title>🚗 Выберите марку</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .categories {
+            margin-bottom: 40px;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .category-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .car-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .car-card:hover {
+            transform: translateY(-8px);
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        
+        .car-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        
+        .car-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .car-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .car-info {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .action-buttons {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 20px;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc 0%, #0055cc 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .telegram-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 136, 204, 0.4);
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 16px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .status.success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 2px solid #28a745;
+            display: block;
+        }
+        
+        .status.error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid #dc3545;
+            display: block;
+        }
+        
+        .status.info {
+            background: rgba(23, 162, 184, 0.2);
+            border: 2px solid #17a2b8;
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .instructions {
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            .cars-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .send-btn, .telegram-btn {
+                padding: 18px 30px;
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
-<body class="tg-body">
+<body>
     <div class="container">
         <h1>🚗 Выберите марку</h1>
         <p class="subtitle">Нажмите на кнопку автомобиля</p>
+        <p class="subtitle" style="font-size: 16px; color: #667eea; font-weight: 600;">
+            ℹ️ Сайт работает в двух режимах:<br>
+            1. В Telegram Web App (через кнопку в боте)<br>
+            2. Как независимый сайт (открыт прямо в браузере)
+        </p>
         
-        <div class="cars-container" id="cars-container">
-            <!-- Кнопки создаются через JavaScript -->
+        <!-- Категория Toyota -->
+        <div class="categories">
+            <div class="category">
+                <div class="category-title">
+                    <span>🏁 Toyota</span>
+                </div>
+                <div class="cars-grid" id="toyotaCars">
+                    <!-- Кнопки Toyota будут добавлены через JS -->
+                </div>
+            </div>
+            
+            <!-- Категория JP Honda -->
+            <div class="category">
+                <div class="category-title">
+                    <span>🇯🇵 JP Honda</span>
+                </div>
+                <div class="cars-grid" id="hondaCars">
+                    <!-- Кнопки Honda будут добавлены через JS -->
+                </div>
+            </div>
+            
+            <!-- Категория KR Hyundai -->
+            <div class="category">
+                <div class="category-title">
+                    <span>🇰🇷 KR Hyundai</span>
+                </div>
+                <div class="cars-grid" id="hyundaiCars">
+                    <!-- Кнопки Hyundai будут добавлены через JS -->
+                </div>
+            </div>
         </div>
+        
+        <div class="action-buttons">
+            <button class="send-btn" id="sendBtn" disabled onclick="sendCarSelection()">
+                <span>📱</span>
+                <span id="sendBtnText">Выберите марку выше</span>
+            </button>
+            
+            <a href="https://t.me/your_bot_username" class="telegram-btn" target="_blank">
+                <span>🤖</span>
+                <span>Открыть бота в Telegram</span>
+            </a>
+        </div>
+        
+        <div class="status" id="statusMessage"></div>
         
         <div class="instructions">
-            ℹ️ После выбора бот пришлет информацию
+            <h3>📖 Как это работает:</h3>
+            <p><strong>Если открыли через Telegram:</strong> Нажмите на марку → Нажмите кнопку "Отправить в Telegram" → Информация придет в чат.</p>
+            <p><strong>Если открыли в браузере:</strong> Нажмите на марку → Скопируйте ключ марки → Откройте бота → Отправьте ключ в чат.</p>
+            <p><strong>Ключи марок:</strong> bmw, mercedes, audi, ford, volkswagen, nissan, hyundai, kia, toyota, honda</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 Каталог автомобилей | Сайт работает независимо от Telegram Web App</p>
+            <p style="margin-top: 10px;">Отправьте ключ марки в Telegram бота для получения информации</p>
         </div>
     </div>
+
+    <script>
+        // Данные автомобилей (точь-в-точь как в твоем боте)
+        const carDatabase = {
+            'toyota': { name: 'Toyota', icon: '🚗', category: 'toyota' },
+            'bmw': { name: 'BMW', icon: '🏎', category: 'toyota' },
+            'mercedes': { name: 'Mercedes', icon: '⭐', category: 'toyota' },
+            'audi': { name: 'Audi', icon: '🔧', category: 'toyota' },
+            'honda': { name: 'Honda', icon: '🇯🇵', category: 'honda' },
+            'ford': { name: 'Ford', icon: '🇺🇸', category: 'honda' },
+            'volkswagen': { name: 'Volkswagen', icon: '🇩🇪', category: 'honda' },
+            'nissan': { name: 'Nissan', icon: '⚡', category: 'honda' },
+            'hyundai': { name: 'Hyundai', icon: '🇰🇷', category: 'hyundai' },
+            'kia': { name: 'Kia', icon: '🌀', category: 'hyundai' }
+        };
+        
+        let selectedBrand = null;
+        let telegramWebApp = null;
+        
+        // Проверяем, находимся ли мы внутри Telegram Web App
+        if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
+            telegramWebApp = window.Telegram.WebApp;
+            telegramWebApp.expand();
+            telegramWebApp.MainButton.text = "Готово";
+            telegramWebApp.MainButton.color = "#667eea";
+            
+            showStatus("✅ Режим Telegram Web App активирован", "success");
+        } else {
+            showStatus("🌐 Режим независимого сайта", "info");
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            initCarButtons();
+        });
+        
+        // Создание кнопок автомобилей
+        function initCarButtons() {
+            // Toyota категория (BMW, Mercedes, Audi)
+            const toyotaCars = ['bmw', 'mercedes', 'audi'];
+            const toyotaGrid = document.getElementById('toyotaCars');
+            
+            toyotaCars.forEach(brandKey => {
+                const car = carDatabase[brandKey];
+                const carCard = createCarCard(car, brandKey);
+                toyotaGrid.appendChild(carCard);
+            });
+            
+            // Добавляем Toyota отдельно
+            const toyotaCard = createCarCard(carDatabase['toyota'], 'toyota');
+            toyotaGrid.appendChild(toyotaCard);
+            
+            // JP Honda категория (Ford, Volkswagen, Nissan, Honda)
+            const hondaCars = ['ford', 'volkswagen', 'nissan', 'honda'];
+            const hondaGrid = document.getElementById('hondaCars');
+            
+            hondaCars.forEach(brandKey => {
+                const car = carDatabase[brandKey];
+                const carCard = createCarCard(car, brandKey);
+                hondaGrid.appendChild(carCard);
+            });
+            
+            // KR Hyundai категория (Hyundai, Kia)
+            const hyundaiCars = ['hyundai', 'kia'];
+            const hyundaiGrid = document.getElementById('hyundaiCars');
+            
+            hyundaiCars.forEach(brandKey => {
+                const car = carDatabase[brandKey];
+                const carCard = createCarCard(car, brandKey);
+                hyundaiGrid.appendChild(carCard);
+            });
+        }
+        
+        // Создание карточки автомобиля
+        function createCarCard(car, brandKey) {
+            const carCard = document.createElement('div');
+            carCard.className = 'car-card';
+            carCard.dataset.brand = brandKey;
+            
+            carCard.innerHTML = `
+                <div class="car-icon">${car.icon}</div>
+                <div class="car-name">${car.name}</div>
+                <div class="car-info">Ключ: ${brandKey}</div>
+            `;
+            
+            carCard.addEventListener('click', function() {
+                // Убираем выделение у всех карточек
+                document.querySelectorAll('.car-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                // Выделяем выбранную карточку
+                this.classList.add('active');
+                selectedBrand = this.dataset.brand;
+                
+                // Активируем кнопку отправки
+                const sendBtn = document.getElementById('sendBtn');
+                const sendBtnText = document.getElementById('sendBtnText');
+                sendBtn.disabled = false;
+                sendBtnText.textContent = `Отправить ${car.name} в Telegram`;
+                
+                showStatus(`✅ Выбрана марка: ${car.name} (ключ: ${brandKey})`, "success");
+            });
+            
+            return carCard;
+        }
+        
+        // Отправка выбранной марки
+        function sendCarSelection() {
+            if (!selectedBrand) {
+                showStatus("❌ Сначала выберите марку автомобиля", "error");
+                return;
+            }
+            
+            if (telegramWebApp) {
+                // Режим Telegram Web App
+                telegramWebApp.sendData(selectedBrand);
+                showStatus("✅ Данные отправлены в Telegram! Закройте это окно.", "success");
+                
+                // Автоматическое закрытие через 2 секунды
+                setTimeout(() => {
+                    telegramWebApp.close();
+                }, 2000);
+            } else {
+                // Режим независимого сайта
+                const carName = carDatabase[selectedBrand].name;
+                const message = `
+📋 Инструкция для отправки:
+
+1. Откройте Telegram бота
+2. Напишите команду: /start
+3. Отправьте ключ марки: ${selectedBrand}
+
+Или просто нажмите кнопку "Открыть бота в Telegram" выше
+`;
+                
+                showStatus(message, "info");
+                
+                // Копируем ключ в буфер обмена
+                copyToClipboard(selectedBrand);
+            }
+        }
+        
+        // Показать статус
+        function showStatus(message, type = "info") {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status ' + type;
+            
+            // Автоматически скрываем успешные сообщения через 5 секунд
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Копировать в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('Текст скопирован в буфер обмена:', text);
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+            });
+        }
+        
+        // Если сайт открыт напрямую, показываем инструкцию
+        if (!telegramWebApp) {
+            setTimeout(() => {
+                showStatus(
+                    "🌐 Вы открыли сайт напрямую в браузере. " +
+                    "Выберите марку автомобиля и следуйте инструкциям для отправки в Telegram бота.",
+                    "info"
+                );
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
